@@ -24,6 +24,7 @@ fun main(args: Array<String>) {
             beans {
                 bean<CustomerRepository>()
 
+                // TODO petves: Refact out and test
                 bean {
                     coRouter {
                         val repository = ref<CustomerRepository>()
@@ -39,8 +40,8 @@ fun main(args: Array<String>) {
                             try {
                                 repository.add(customer)
                                 ServerResponse.ok().buildAndAwait()
-                            } catch(e: DuplicateCustomerIdException) {
-                                logger.error("Could not add customer $customer", e)
+                            } catch (e: DuplicateCustomerIdException) {
+                                logger.error("Could not add customer $customer because a customer with id ${customer.id} already exist", e)
                                 ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
                             }
                         }
@@ -51,6 +52,7 @@ fun main(args: Array<String>) {
     }
 }
 
+// TODO petves: Test
 class CustomerRepository {
 
     private val list = mutableListOf(

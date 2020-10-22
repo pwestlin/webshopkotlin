@@ -36,6 +36,7 @@ fun main(args: Array<String>) {
             beans {
                 bean<HttpCustomerRepository>()
 
+                // TODO petves: Refact out and test
                 bean {
                     coRouter {
                         val repository = ref<CustomerRepository>()
@@ -83,6 +84,7 @@ interface CustomerRepository {
     suspend fun add(customer: Customer)
 }
 
+// TODO petves: Test
 class HttpCustomerRepository(
     @Qualifier("customerServiceWebClient")
     private val webClient: WebClient
