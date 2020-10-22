@@ -26,6 +26,7 @@ class CustomerRoutesConfiguration {
 
     @Bean
     fun routes(repository: CustomerRepository) = coRouter {
+        // TODO petves: /customers -> / (customers is already "in context")
         "/customers".nest {
             GET("") {
                 ServerResponse.ok().bodyValueAndAwait(repository.all())

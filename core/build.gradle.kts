@@ -26,6 +26,9 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation(project(":testutils"))
+    testImplementation(group = "io.mockk", name = "mockk", version = "1.10.2")
+    testImplementation(group = "com.ninja-squad", name = "springmockk", version = "2.0.3")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.27.2")
 }
 
 tasks.withType<Test> {
