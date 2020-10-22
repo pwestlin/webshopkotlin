@@ -52,22 +52,16 @@ fun main(args: Array<String>) {
     }
 }
 
-// TODO petves: Test
-class CustomerRepository {
+class CustomerRepository(customers: List<Customer>) {
 
-    private val list = mutableListOf(
-        Customer(1, "Camilla"),
-        Customer(2, "Peter"),
-        Customer(3, "Adam"),
-        Customer(4, "Felix")
-    )
+    private val customers = customers.toMutableList()
 
-    fun all(): List<Customer> = list.toList()
-    fun get(id: Int): Customer? = list.firstOrNull { it.id == id }
+    fun all(): List<Customer> = this.customers.toList()
+    fun get(id: Int): Customer? = this.customers.firstOrNull { it.id == id }
     fun add(customer: Customer) {
         // TODO petves: Use kotlin.Result instead of exception?
-        if(list.none { it.id == customer.id }) {
-            list.add(customer)
+        if (this.customers.none { it.id == customer.id }) {
+            this.customers.add(customer)
         } else {
             throw DuplicateCustomerIdException("A customer with id ${customer.id} already exist")
         }
