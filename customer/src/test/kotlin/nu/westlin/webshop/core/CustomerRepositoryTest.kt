@@ -1,7 +1,6 @@
 package nu.westlin.webshop.core
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -21,16 +20,17 @@ internal class CustomerRepositoryTest {
 
     @Test
     fun `add a customer`() {
-        repository.add(jen)
+        assertThat(repository.add(jen).isSuccess).isTrue
 
         assertThat(repository.all()).containsExactlyInAnyOrder(maria, steve, greg, jen)
     }
 
     @Test
     fun `add a customer with a customerId that already exist`() {
-        assertThatThrownBy { repository.add(greg.copy(name = "George")) }
-            .isInstanceOf(DuplicateCustomerIdException::class.java)
-            .hasMessage("A customer with id ${greg.id} already exist")
+        repository.add(greg.copy(name = "George")).exceptionOrNull()!!.let { e ->
+            assertThat(e).isInstanceOf(DuplicateCustomerIdException::class.java)
+            assertThat(e).hasMessage("A customer with id ${greg.id} already exist")
+        }
     }
 
     @Test

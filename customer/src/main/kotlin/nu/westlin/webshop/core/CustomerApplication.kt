@@ -1,6 +1,7 @@
 package nu.westlin.webshop.core
 
 import nu.westlin.webshop.domain.Customer
+import nu.westlin.webshop.domain.CustomerId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -35,13 +36,14 @@ class CustomerRoutesConfiguration {
             }
             POST("") { request ->
                 val customer = request.awaitBody<Customer>()
-                try {
-                    repository.add(customer)
-                    ServerResponse.ok().buildAndAwait()
-                } catch (e: DuplicateCustomerIdException) {
-                    logger.error("Could not add customer $customer because a customer with id ${customer.id} already exist", e)
-                    ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
-                }
+                val result = repository.add(customer)
+                result.fold(
+                    { ServerResponse.ok().buildAndAwait() },
+                    {
+                        logger.error("Could not add customer $customer because a customer with id ${customer.id} already exist", it)
+                        ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
+                    }
+                )
             }
         }
     }
@@ -71,15 +73,15 @@ class CustomerRepository(customers: List<Customer>) {
 
     fun all(): List<Customer> = this.customers.toList()
     fun get(id: Int): Customer? = this.customers.firstOrNull { it.id == id }
-    fun add(customer: Customer) {
-        // TODO petves: Use kotlin.Result instead of exception?
-        if (this.customers.none { it.id == customer.id }) {
-            this.customers.add(customer)
+    fun add(customer: Customer): Result<Unit> {
+        return if (this.customers.none { it.id == customer.id }) {
+            customers.add(customer)
+            Result.success(Unit)
         } else {
-            throw DuplicateCustomerIdException("A customer with id ${customer.id} already exist")
+            Result.failure(DuplicateCustomerIdException(customer.id))
         }
 
     }
 }
 
-class DuplicateCustomerIdException(message: String) : RuntimeException(message)
+class DuplicateCustomerIdException(customerId: CustomerId) : RuntimeException("A customer with id $customerId already exist")

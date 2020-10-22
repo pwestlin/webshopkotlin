@@ -59,7 +59,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
 
     @Test
     fun `add a customer with a customer id that does not exist`() {
-        every { repository.add(jen) } returns Unit
+        every { repository.add(jen) } returns inlineValue(Result.success(Unit))
 
         val result = client.post()
             .uri("/customers")
@@ -74,7 +74,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
 
     @Test
     fun `add a customer with a customer id that already exist`() {
-        every { repository.add(jen) } throws DuplicateCustomerIdException("Foo bar")
+        every { repository.add(jen) } returns inlineValue(Result.failure(DuplicateCustomerIdException(jen.id)))
 
         val result = client.post()
             .uri("/customers")
