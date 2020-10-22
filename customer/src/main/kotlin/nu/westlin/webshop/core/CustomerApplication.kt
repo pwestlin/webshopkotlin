@@ -22,27 +22,36 @@ fun main(args: Array<String>) {
 
         addInitializers(
             beans {
-                bean<CustomerRepository>()
+                bean {
+                    CustomerRepository(listOf(
+                        Customer(1, "Camilla"),
+                        Customer(2, "Peter"),
+                        Customer(3, "Adam"),
+                        Customer(4, "Felix")
+                    ))
+                }
 
                 // TODO petves: Refact out and test
                 bean {
                     coRouter {
-                        val repository = ref<CustomerRepository>()
-                        GET("/customers") {
-                            ServerResponse.ok().bodyValueAndAwait(repository.all())
-                        }
-                        GET("/customers/{id}") {
-                            repository.get(it.pathVariable("id").toInt())?.let { customer -> ServerResponse.ok().bodyValueAndAwait(customer) }
-                                ?: ServerResponse.notFound().buildAndAwait()
-                        }
-                        POST("/customers") { request ->
-                            val customer = request.awaitBody<Customer>()
-                            try {
-                                repository.add(customer)
-                                ServerResponse.ok().buildAndAwait()
-                            } catch (e: DuplicateCustomerIdException) {
-                                logger.error("Could not add customer $customer because a customer with id ${customer.id} already exist", e)
-                                ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
+                        "/customers".nest {
+                            val repository = ref<CustomerRepository>()
+                            GET("") {
+                                ServerResponse.ok().bodyValueAndAwait(repository.all())
+                            }
+                            GET("/{id}") {
+                                repository.get(it.pathVariable("id").toInt())?.let { customer -> ServerResponse.ok().bodyValueAndAwait(customer) }
+                                    ?: ServerResponse.notFound().buildAndAwait()
+                            }
+                            POST("") { request ->
+                                val customer = request.awaitBody<Customer>()
+                                try {
+                                    repository.add(customer)
+                                    ServerResponse.ok().buildAndAwait()
+                                } catch (e: DuplicateCustomerIdException) {
+                                    logger.error("Could not add customer $customer because a customer with id ${customer.id} already exist", e)
+                                    ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
+                                }
                             }
                         }
                     }
