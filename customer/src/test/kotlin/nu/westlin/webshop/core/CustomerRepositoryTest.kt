@@ -1,5 +1,10 @@
 package nu.westlin.webshop.core
 
+import nu.westlin.webshop.test.customers
+import nu.westlin.webshop.test.greg
+import nu.westlin.webshop.test.jen
+import nu.westlin.webshop.test.maria
+import nu.westlin.webshop.test.steve
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

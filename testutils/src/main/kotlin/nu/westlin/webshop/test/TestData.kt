@@ -1,9 +1,6 @@
-package nu.westlin.webshop.core
+package nu.westlin.webshop.test
 
 import nu.westlin.webshop.domain.Customer
-
-// TODO petves: Move this to separate module and import where it's needed?
-
 
 val maria = Customer(1, "Maria")
 val steve = Customer(2, "Steve")
