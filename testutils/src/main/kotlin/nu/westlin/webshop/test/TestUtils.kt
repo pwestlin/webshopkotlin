@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package nu.westlin.webshop.core
+package nu.westlin.webshop.test
 
 import io.mockk.ConstantMatcher
 import io.mockk.MockKGateway.CallRecorder
@@ -9,8 +9,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
-
-// TODO petves: Move this to separate module and import where it's needed
 
 fun <T : Any> value(value: T): T =
     if (value::class.isInline) inlineValue(value)
