@@ -7,17 +7,18 @@ allprojects {
 
     group = "nu.westlin.webshop"
 
-    version = "1.0"
+    version = "0.1-SNAPSHOT"
 
     repositories {
         mavenCentral()
     }
 }
 
+/*
 dependencies {
     // Make the root project archives configuration depend on every subproject
     subprojects.forEach {
         // TODO petves: Fix
         archives(it)
     }
-}
+}*/

@@ -7,6 +7,7 @@ plugins {
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+// TODO petves: Where to put common stuff (deps, test-conf etc) for Microservices?
 
 dependencies {
     implementation(project(":domain"))
@@ -26,12 +27,10 @@ dependencies {
     }
 }
 
-
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-// TODO petves: Should be i base class?
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
