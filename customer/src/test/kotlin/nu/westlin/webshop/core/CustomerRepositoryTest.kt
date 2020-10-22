@@ -1,23 +1,11 @@
 package nu.westlin.webshop.core
 
-import nu.westlin.webshop.domain.Customer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class CustomerRepositoryTest {
-
-    private val maria = Customer(1, "Maria")
-    private val steve = Customer(2, "Steve")
-    private val greg = Customer(3, "Greg")
-    private val jen = Customer(4, "Jen")
-
-    private val customers = listOf(
-        maria,
-        steve,
-        greg
-    )
 
     private lateinit var repository: CustomerRepository
 
