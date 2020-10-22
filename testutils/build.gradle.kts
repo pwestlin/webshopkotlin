@@ -1,9 +1,4 @@
-plugins {
-    kotlin("jvm")
-}
-
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(project(":domain"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
