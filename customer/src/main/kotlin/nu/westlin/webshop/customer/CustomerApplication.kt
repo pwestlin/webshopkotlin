@@ -26,8 +26,7 @@ class CustomerRoutesConfiguration {
 
     @Bean
     fun routes(repository: CustomerRepository) = coRouter {
-        // TODO petves: /customers -> / (customers is already "in context")
-        "/customers".nest {
+        "/".nest {
             GET("") {
                 ServerResponse.ok().bodyValueAndAwait(repository.all())
             }
@@ -48,7 +47,6 @@ class CustomerRoutesConfiguration {
             }
         }
     }
-
 }
 
 fun main(args: Array<String>) {
@@ -56,12 +54,14 @@ fun main(args: Array<String>) {
         addInitializers(
             beans {
                 bean {
-                    CustomerRepository(listOf(
-                        Customer(1, "Camilla"),
-                        Customer(2, "Peter"),
-                        Customer(3, "Adam"),
-                        Customer(4, "Felix")
-                    ))
+                    CustomerRepository(
+                        listOf(
+                            Customer(1, "Camilla"),
+                            Customer(2, "Peter"),
+                            Customer(3, "Adam"),
+                            Customer(4, "Felix")
+                        )
+                    )
                 }
             }
         )

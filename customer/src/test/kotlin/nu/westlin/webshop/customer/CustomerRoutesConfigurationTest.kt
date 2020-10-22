@@ -32,7 +32,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
         every { repository.all() } returns customers
 
         val result = client.get()
-            .uri("/customers")
+            .uri("/")
             .exchange()
             .expectStatus().isOk
             .expectBodyList<Customer>().returnResult()
@@ -44,7 +44,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
         every { repository.get(maria.id) } returns maria
 
         client.get()
-            .uri("/customers/${maria.id}")
+            .uri("/${maria.id}")
             .exchange()
             .expectStatus().isOk
             .expectBody<Customer>().isEqualTo(maria)
@@ -55,7 +55,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
         every { repository.get(jen.id) } returns null
 
         val result = client.get()
-            .uri("/customers/${jen.id}")
+            .uri("/${jen.id}")
             .exchange()
             .expectStatus().isNotFound
             .expectBody<Any>().returnResult()
@@ -67,7 +67,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
         every { repository.add(jen) } returns inlineValue(Result.success(Unit))
 
         val result = client.post()
-            .uri("/customers")
+            .uri("/")
             .bodyValue(jen)
             .exchange()
             .expectStatus().isOk
@@ -82,7 +82,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
         every { repository.add(jen) } returns inlineValue(Result.failure(DuplicateCustomerIdException(jen.id)))
 
         val result = client.post()
-            .uri("/customers")
+            .uri("/")
             .bodyValue(jen)
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.CONFLICT)

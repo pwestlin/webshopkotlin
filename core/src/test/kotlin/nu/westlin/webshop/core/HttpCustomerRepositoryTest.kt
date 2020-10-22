@@ -100,10 +100,12 @@ internal class HttpCustomerRepositoryTest {
 
         repository.add(steve)
 
-        mockServer.verify(1, WireMock.postRequestedFor(WireMock.urlPathEqualTo("/customers"))
-            .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
-            .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
-            .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(customer)))
+        mockServer.verify(
+            1,
+            WireMock.postRequestedFor(WireMock.urlPathEqualTo("/customers"))
+                .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(customer)))
         )
     }
 }

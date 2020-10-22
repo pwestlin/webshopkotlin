@@ -7,9 +7,16 @@ plugins {
     id("org.springframework.boot") version "2.3.4.RELEASE" apply false
     id("io.spring.dependency-management") version "1.0.10.RELEASE" apply false
     kotlin("plugin.spring") version "1.4.10" apply false
+
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 allprojects {
+
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    ktlint {
+        disabledRules.set(listOf("final-newline,import-ordering"))
+    }
 
     group = "nu.westlin.webshop"
 
@@ -43,7 +50,6 @@ subprojects {
             jvmTarget = "1.8"
         }
     }
-
 
     if (project.name in listOf("core", "customer")) {
 

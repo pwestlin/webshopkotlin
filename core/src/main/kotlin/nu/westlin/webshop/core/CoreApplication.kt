@@ -27,7 +27,6 @@ import org.springframework.web.reactive.function.server.buildAndAwait
 import org.springframework.web.reactive.function.server.coRouter
 import org.springframework.web.reactive.function.server.json
 
-
 @SpringBootApplication
 class CoreApplication
 
@@ -127,4 +126,3 @@ class HttpCustomerRepository(
         }
     }
 }
-
