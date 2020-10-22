@@ -75,12 +75,3 @@ subprojects {
         }
     }
 }
-
-/*
-dependencies {
-    // Make the root project archives configuration depend on every subproject
-    subprojects.forEach {
-        // TODO petves: Fix
-        archives(it)
-    }
-}*/

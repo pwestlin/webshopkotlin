@@ -1,5 +1,6 @@
-package nu.westlin.webshop.core
+package nu.westlin.webshop.customer
 
+import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.test.customers
 import nu.westlin.webshop.test.greg
 import nu.westlin.webshop.test.jen

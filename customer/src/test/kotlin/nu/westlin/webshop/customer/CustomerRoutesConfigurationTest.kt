@@ -1,9 +1,10 @@
-package nu.westlin.webshop.core
+package nu.westlin.webshop.customer
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
 import nu.westlin.webshop.domain.Customer
+import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.test.customers
 import nu.westlin.webshop.test.inlineValue
 import nu.westlin.webshop.test.jen

@@ -1,7 +1,7 @@
-package nu.westlin.webshop.core
+package nu.westlin.webshop.customer
 
 import nu.westlin.webshop.domain.Customer
-import nu.westlin.webshop.domain.CustomerId
+import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -81,8 +81,5 @@ class CustomerRepository(customers: List<Customer>) {
         } else {
             Result.failure(DuplicateCustomerIdException(customer.id))
         }
-
     }
 }
-
-class DuplicateCustomerIdException(customerId: CustomerId) : RuntimeException("A customer with id $customerId already exist")

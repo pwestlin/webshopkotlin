@@ -2,6 +2,7 @@ package nu.westlin.webshop.core
 
 import kotlinx.coroutines.flow.Flow
 import nu.westlin.webshop.domain.Customer
+import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -47,13 +48,18 @@ class CustomerRoutesConfiguration {
             }
             POST("") { request ->
                 val customer = request.awaitBody<Customer>()
-                try {
-                    repository.add(customer)
-                    ServerResponse.ok().buildAndAwait()
-                } catch (e: RuntimeException) {
-                    logger.error("Could not add customer $customer", e)
-                    ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).buildAndAwait()
-                }
+                repository.add(customer).fold(
+                    { ServerResponse.ok().buildAndAwait() },
+                    {
+                        logger.error("Could not add customer $customer", it)
+
+                        if (it is DuplicateCustomerIdException) {
+                            ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
+                        } else {
+                            ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).buildAndAwait()
+                        }
+                    }
+                )
             }
         }
     }
@@ -86,7 +92,7 @@ class WebClientConfiguration {
 interface CustomerRepository {
     suspend fun all(): Flow<Customer>
     suspend fun get(id: Int): Customer?
-    suspend fun add(customer: Customer)
+    suspend fun add(customer: Customer): Result<Unit>
 }
 
 class HttpCustomerRepository(
@@ -107,15 +113,17 @@ class HttpCustomerRepository(
             .awaitBodyOrNull()
     }
 
-    override suspend fun add(customer: Customer) {
-        val result = webClient.post()
+    override suspend fun add(customer: Customer): Result<Unit> {
+        val statusCode = webClient.post()
             .uri("/customers")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .bodyValue(customer)
             .awaitExchange()
-        if (result.statusCode() != HttpStatus.OK) {
-            // TODO petves: return Kotlin.result instead?
-            throw RuntimeException("Could not add customer $customer, httpStatus ${result.statusCode()}")
+            .statusCode()
+        return when (statusCode) {
+            HttpStatus.OK -> Result.success(Unit)
+            HttpStatus.CONFLICT -> Result.failure(DuplicateCustomerIdException(customer.id))
+            else -> Result.failure(RuntimeException("Could not add customer $customer, httpStatus = $statusCode"))
         }
     }
 }

@@ -6,7 +6,9 @@ import io.mockk.coVerify
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.runBlocking
 import nu.westlin.webshop.domain.Customer
+import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.test.customers
+import nu.westlin.webshop.test.inlineValue
 import nu.westlin.webshop.test.jen
 import nu.westlin.webshop.test.maria
 import org.assertj.core.api.Assertions.assertThat
@@ -64,7 +66,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
 
     @Test
     fun `add a customer with a customer id that does not exist`() {
-        coEvery { repository.add(jen) } returns Unit
+        coEvery { repository.add(jen) } returns inlineValue(Result.success(Unit))
 
         val result = client.post()
             .uri("/customers")
@@ -79,7 +81,22 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
 
     @Test
     fun `add a customer with a customer id that already exist`() {
-        coEvery { repository.add(jen) } throws RuntimeException("foo")
+        coEvery { repository.add(jen) } returns inlineValue(Result.failure(DuplicateCustomerIdException(jen.id)))
+
+        val result = client.post()
+            .uri("/customers")
+            .bodyValue(jen)
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+            .expectBody<Any>().returnResult()
+        assertThat(result.responseBody).isNull()
+
+        coVerify { repository.add(jen) }
+    }
+
+    @Test
+    fun `add a customer with a customer id not OK nor CONFLICT`() {
+        coEvery { repository.add(jen) } returns inlineValue(Result.failure(RuntimeException("foo")))
 
         val result = client.post()
             .uri("/customers")
