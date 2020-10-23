@@ -29,7 +29,6 @@ internal class HttpOrderRepositoryTest {
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-    // TODO petves: Move to TestUtils
     private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @Suppress("unused")
