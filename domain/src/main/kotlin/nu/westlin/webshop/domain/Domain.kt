@@ -12,3 +12,4 @@ data class OrderRow(val productId: ProductId, val quantity: Int)
 data class Order(val id: Int, val customerId: CustomerId, val timestamp: LocalDateTime, val orderRows: List<OrderRow>)
 
 class DuplicateCustomerIdException(customerId: CustomerId) : RuntimeException("A customer with id $customerId already exist")
+class DuplicateProductIdException(productId: ProductId) : RuntimeException("A product with id $productId already exist")

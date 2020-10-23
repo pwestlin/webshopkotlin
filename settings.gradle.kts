@@ -1,3 +1,3 @@
 rootProject.name = "webshopkotlin"
 
-include("domain", "core", "customer", "testutils")
+include("domain", "core", "customer", "testutils", "product")

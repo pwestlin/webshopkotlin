@@ -1,9 +1,9 @@
-package nu.westlin.webshop.customer
+package nu.westlin.webshop.product
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import nu.westlin.webshop.domain.Customer
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
+import nu.westlin.webshop.domain.Product
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -20,30 +20,30 @@ import org.springframework.web.reactive.function.server.buildAndAwait
 import org.springframework.web.reactive.function.server.coRouter
 
 @SpringBootApplication
-class CustomerApplication
+class ProductApplication
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
-class CustomerRoutesConfiguration {
+class ProductRoutesConfiguration {
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @Bean
-    fun routes(repository: CustomerRepository) = coRouter {
+    fun routes(repository: ProductRepository) = coRouter {
         "/".nest {
             GET("") {
                 ServerResponse.ok().bodyAndAwait(repository.all())
             }
             GET("/{id}") {
-                repository.get(it.pathVariable("id").toInt())?.let { customer -> ServerResponse.ok().bodyValueAndAwait(customer) }
+                repository.get(it.pathVariable("id").toInt())?.let { product -> ServerResponse.ok().bodyValueAndAwait(product) }
                     ?: ServerResponse.notFound().buildAndAwait()
             }
             POST("") { request ->
-                val customer = request.awaitBody<Customer>()
-                val result = repository.add(customer)
+                val product = request.awaitBody<Product>()
+                val result = repository.add(product)
                 result.fold(
                     { ServerResponse.ok().buildAndAwait() },
                     {
-                        logger.error("Could not add customer $customer because a customer with id ${customer.id} already exist", it)
+                        logger.error("Could not add product $product because a product with id ${product.id} already exist", it)
                         ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
                     }
                 )
@@ -53,16 +53,16 @@ class CustomerRoutesConfiguration {
 }
 
 fun main(args: Array<String>) {
-    runApplication<CustomerApplication>(*args) {
+    runApplication<ProductApplication>(*args) {
         addInitializers(
             beans {
                 bean {
-                    CustomerRepository(
+                    ProductRepository(
                         listOf(
-                            Customer(1, "Camilla"),
-                            Customer(2, "Peter"),
-                            Customer(3, "Adam"),
-                            Customer(4, "Felix")
+                            Product(1, "Cookie", "Tastes really good"),
+                            Product(2, "Chain lube"),
+                            Product(3, "Soda"),
+                            Product(4, "Engine oil")
                         )
                     )
                 }
@@ -71,18 +71,18 @@ fun main(args: Array<String>) {
     }
 }
 
-class CustomerRepository(customers: List<Customer>) {
+class ProductRepository(products: List<Product>) {
 
-    private val customers = customers.toMutableList()
+    private val products = products.toMutableList()
 
-    fun all(): Flow<Customer> = this.customers.asFlow()
-    fun get(id: Int): Customer? = this.customers.firstOrNull { it.id == id }
-    fun add(customer: Customer): Result<Unit> {
-        return if (this.customers.none { it.id == customer.id }) {
-            customers.add(customer)
+    fun all(): Flow<Product> = this.products.asFlow()
+    fun get(id: Int): Product? = this.products.firstOrNull { it.id == id }
+    fun add(product: Product): Result<Unit> {
+        return if (this.products.none { it.id == product.id }) {
+            products.add(product)
             Result.success(Unit)
         } else {
-            Result.failure(DuplicateCustomerIdException(customer.id))
+            Result.failure(DuplicateCustomerIdException(product.id))
         }
     }
 }

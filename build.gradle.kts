@@ -59,7 +59,7 @@ subprojects {
         }
     }
 
-    if (project.name in listOf("core", "customer")) {
+    if (project.name in listOf("core", "customer", "product")) {
 
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
