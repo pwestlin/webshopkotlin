@@ -3,6 +3,7 @@ package nu.westlin.webshop.customer
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
+import kotlinx.coroutines.flow.asFlow
 import nu.westlin.webshop.domain.Customer
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.test.customers
@@ -29,7 +30,7 @@ internal class CustomerRoutesConfigurationTest(@Autowired private val client: We
     @Test
     fun `get all customers`() {
 
-        every { repository.all() } returns customers
+        every { repository.all() } returns customers.asFlow()
 
         val result = client.get()
             .uri("/")

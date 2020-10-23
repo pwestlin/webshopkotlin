@@ -1,5 +1,7 @@
 package nu.westlin.webshop.customer
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import nu.westlin.webshop.domain.Customer
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import org.slf4j.Logger
@@ -12,6 +14,7 @@ import org.springframework.context.support.beans
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.awaitBody
+import org.springframework.web.reactive.function.server.bodyAndAwait
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.buildAndAwait
 import org.springframework.web.reactive.function.server.coRouter
@@ -28,7 +31,7 @@ class CustomerRoutesConfiguration {
     fun routes(repository: CustomerRepository) = coRouter {
         "/".nest {
             GET("") {
-                ServerResponse.ok().bodyValueAndAwait(repository.all())
+                ServerResponse.ok().bodyAndAwait(repository.all())
             }
             GET("/{id}") {
                 repository.get(it.pathVariable("id").toInt())?.let { customer -> ServerResponse.ok().bodyValueAndAwait(customer) }
@@ -73,7 +76,7 @@ class CustomerRepository(customers: List<Customer>) {
     private val customers = customers.toMutableList()
 
     // TODO petves: Flux
-    fun all(): List<Customer> = this.customers.toList()
+    fun all(): Flow<Customer> = this.customers.asFlow()
     fun get(id: Int): Customer? = this.customers.firstOrNull { it.id == id }
     fun add(customer: Customer): Result<Unit> {
         return if (this.customers.none { it.id == customer.id }) {

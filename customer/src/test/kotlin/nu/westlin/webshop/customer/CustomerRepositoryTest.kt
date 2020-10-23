@@ -1,5 +1,7 @@
 package nu.westlin.webshop.customer
 
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.test.customers
 import nu.westlin.webshop.test.greg
@@ -20,15 +22,15 @@ internal class CustomerRepositoryTest {
     }
 
     @Test
-    fun `get all customers`() {
-        assertThat(repository.all()).containsExactlyInAnyOrder(maria, steve, greg)
+    fun `get all customers`() = runBlocking<Unit> {
+        assertThat(repository.all().toList()).containsExactlyInAnyOrder(maria, steve, greg)
     }
 
     @Test
-    fun `add a customer`() {
+    fun `add a customer`() = runBlocking<Unit> {
         assertThat(repository.add(jen).isSuccess).isTrue
 
-        assertThat(repository.all()).containsExactlyInAnyOrder(maria, steve, greg, jen)
+        assertThat(repository.all().toList()).containsExactlyInAnyOrder(maria, steve, greg, jen)
     }
 
     @Test
