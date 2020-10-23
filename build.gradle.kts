@@ -9,9 +9,17 @@ plugins {
     kotlin("plugin.spring") version "1.4.10" apply false
 
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    idea
 }
 
 allprojects {
+    apply(plugin = "idea")
+    idea {
+        module {
+            isDownloadJavadoc = true
+            isDownloadSources = true
+        }
+    }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     ktlint {
