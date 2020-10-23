@@ -100,21 +100,21 @@ class HttpCustomerRepository(
 ) : CustomerRepository {
     override suspend fun all(): Flow<Customer> {
         return webClient.get()
-            .uri("/customers")
+            .uri("/")
             .retrieve()
             .bodyToFlow()
     }
 
     override suspend fun get(id: Int): Customer? {
         return webClient.get()
-            .uri("/customers/$id")
+            .uri("/$id")
             .awaitExchange()
             .awaitBodyOrNull()
     }
 
     override suspend fun add(customer: Customer): Result<Unit> {
         val statusCode = webClient.post()
-            .uri("/customers")
+            .uri("/")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .bodyValue(customer)
             .awaitExchange()

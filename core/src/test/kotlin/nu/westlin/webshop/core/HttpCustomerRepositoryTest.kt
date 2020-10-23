@@ -54,7 +54,7 @@ internal class HttpCustomerRepositoryTest {
     @Test
     fun `get all`() = runBlocking<Unit> {
         mockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/customers"))
+            WireMock.get(WireMock.urlPathEqualTo("/"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .willReturn(WireMock.okJson(objectMapper.writeValueAsString(customers)))
         )
@@ -66,7 +66,7 @@ internal class HttpCustomerRepositoryTest {
     fun `get customer by id that exist`() = runBlocking<Unit> {
         val customer = jen
         mockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/customers/${jen.id}"))
+            WireMock.get(WireMock.urlPathEqualTo("/${jen.id}"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .willReturn(WireMock.okJson(objectMapper.writeValueAsString(jen)))
         )
@@ -78,7 +78,7 @@ internal class HttpCustomerRepositoryTest {
     fun `get customer by id that does not exist`() = runBlocking {
         val customerId = 1
         mockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/customers/$customerId"))
+            WireMock.get(WireMock.urlPathEqualTo("/$customerId"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .willReturn(WireMock.notFound())
         )
@@ -91,7 +91,7 @@ internal class HttpCustomerRepositoryTest {
         val customer = steve
 
         mockServer.stubFor(
-            WireMock.post(WireMock.urlPathEqualTo("/customers"))
+            WireMock.post(WireMock.urlPathEqualTo("/"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(customer)))
@@ -102,7 +102,7 @@ internal class HttpCustomerRepositoryTest {
 
         mockServer.verify(
             1,
-            WireMock.postRequestedFor(WireMock.urlPathEqualTo("/customers"))
+            WireMock.postRequestedFor(WireMock.urlPathEqualTo("/"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(customer)))

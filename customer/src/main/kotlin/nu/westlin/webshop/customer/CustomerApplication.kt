@@ -72,6 +72,7 @@ class CustomerRepository(customers: List<Customer>) {
 
     private val customers = customers.toMutableList()
 
+    // TODO petves: Flux
     fun all(): List<Customer> = this.customers.toList()
     fun get(id: Int): Customer? = this.customers.firstOrNull { it.id == id }
     fun add(customer: Customer): Result<Unit> {
