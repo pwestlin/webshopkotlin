@@ -3,3 +3,4 @@ spring.application.name: core
 
 customerService.baseUrl: http://localhost:8081
 productService.baseUrl: http://localhost:8082
+orderService.baseUrl: http://localhost:8083

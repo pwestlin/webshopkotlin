@@ -8,9 +8,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.matching.EqualToPattern
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import nu.westlin.webshop.test.customers
-import nu.westlin.webshop.test.jen
-import nu.westlin.webshop.test.steve
+import nu.westlin.webshop.test.order1
+import nu.westlin.webshop.test.order4
+import nu.westlin.webshop.test.orders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -21,14 +21,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 
-internal class HttpCustomerRepositoryTest {
+internal class HttpOrderRepositoryTest {
 
     private lateinit var mockServer: WireMockServer
 
-    private lateinit var repository: HttpCustomerRepository
+    private lateinit var repository: HttpOrderRepository
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
+    // TODO petves: Move to TestUtils
     private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @Suppress("unused")
@@ -36,8 +37,8 @@ internal class HttpCustomerRepositoryTest {
     fun setup() {
         mockServer = WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort()).apply { start() }
 
-        repository = HttpCustomerRepository(
-            WebClientConfiguration().customerServiceWebClient("http://localhost:${mockServer.port()}")
+        repository = HttpOrderRepository(
+            WebClientConfiguration().orderServiceWebClient("http://localhost:${mockServer.port()}")
         )
     }
 
@@ -57,56 +58,56 @@ internal class HttpCustomerRepositoryTest {
         mockServer.stubFor(
             WireMock.get(WireMock.urlPathEqualTo("/"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
-                .willReturn(WireMock.okJson(objectMapper.writeValueAsString(customers)))
+                .willReturn(WireMock.okJson(objectMapper.writeValueAsString(orders)))
         )
 
-        assertThat(repository.all().toList()).containsExactlyElementsOf(customers)
+        assertThat(repository.all().toList()).containsExactlyElementsOf(orders)
     }
 
     @Test
-    fun `get customer by id that exist`() = runBlocking<Unit> {
-        val customer = jen
+    fun `get order by id that exist`() = runBlocking<Unit> {
+        val order = order1
         mockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/${jen.id}"))
+            WireMock.get(WireMock.urlPathEqualTo("/${order.id}"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
-                .willReturn(WireMock.okJson(objectMapper.writeValueAsString(jen)))
+                .willReturn(WireMock.okJson(objectMapper.writeValueAsString(order)))
         )
 
-        assertThat(repository.get(customer.id)).isEqualTo(customer)
+        assertThat(repository.get(order.id)).isEqualTo(order)
     }
 
     @Test
-    fun `get customer by id that does not exist`() = runBlocking {
-        val customerId = 1
+    fun `get order by id that does not exist`() = runBlocking {
+        val orderId = 1
         mockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/$customerId"))
+            WireMock.get(WireMock.urlPathEqualTo("/$orderId"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .willReturn(WireMock.notFound())
         )
 
-        assertThat(repository.get(customerId)).isNull()
+        assertThat(repository.get(orderId)).isNull()
     }
 
     @Test
-    fun `add a customer with an id that does not exist`() = runBlocking {
-        val customer = steve
+    fun `add a order with an id that does not exist`() = runBlocking {
+        val order = order4
 
         mockServer.stubFor(
             WireMock.post(WireMock.urlPathEqualTo("/"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
-                .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(customer)))
+                .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(order)))
                 .willReturn(WireMock.ok())
         )
 
-        repository.add(steve)
+        repository.add(order)
 
         mockServer.verify(
             1,
             WireMock.postRequestedFor(WireMock.urlPathEqualTo("/"))
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
-                .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(customer)))
+                .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(order)))
         )
     }
 }

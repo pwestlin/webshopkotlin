@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.domain.Product
+import nu.westlin.webshop.test.products
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -57,14 +58,7 @@ fun main(args: Array<String>) {
         addInitializers(
             beans {
                 bean {
-                    ProductRepository(
-                        listOf(
-                            Product(1, "Cookie", "Tastes really good"),
-                            Product(2, "Chain lube"),
-                            Product(3, "Soda"),
-                            Product(4, "Engine oil")
-                        )
-                    )
+                    ProductRepository(products)
                 }
             }
         )

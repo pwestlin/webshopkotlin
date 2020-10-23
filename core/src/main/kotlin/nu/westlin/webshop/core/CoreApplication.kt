@@ -3,7 +3,9 @@ package nu.westlin.webshop.core
 import kotlinx.coroutines.flow.Flow
 import nu.westlin.webshop.domain.Customer
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
+import nu.westlin.webshop.domain.DuplicateOrderIdException
 import nu.westlin.webshop.domain.DuplicateProductIdException
+import nu.westlin.webshop.domain.Order
 import nu.westlin.webshop.domain.Product
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -100,12 +102,47 @@ class ProductRoutesConfiguration {
     }
 }
 
+@Configuration
+class OrderRoutesConfiguration {
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Bean
+    fun orderRoutes(repository: OrderRepository) = coRouter {
+        "/orders".nest {
+            GET("") {
+                ServerResponse.ok().json().bodyAndAwait(repository.all())
+            }
+            GET("/{id}") {
+                repository.get(it.pathVariable("id").toInt())?.let { order -> ServerResponse.ok().bodyValueAndAwait(order) }
+                    ?: ServerResponse.notFound().buildAndAwait()
+            }
+            POST("") { request ->
+                val order = request.awaitBody<Order>()
+                repository.add(order).fold(
+                    { ServerResponse.ok().buildAndAwait() },
+                    {
+                        logger.error("Could not add order $order", it)
+
+                        if (it is DuplicateOrderIdException) {
+                            ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
+                        } else {
+                            ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).buildAndAwait()
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
 fun main(args: Array<String>) {
     runApplication<CoreApplication>(*args) {
         addInitializers(
             beans {
                 bean<HttpCustomerRepository>()
                 bean<HttpProductRepository>()
+                bean<HttpOrderRepository>()
             }
         )
     }
@@ -122,6 +159,11 @@ class WebClientConfiguration {
     @Bean("productServiceWebClient")
     fun productServiceWebClient(
         @Value("\${productService.baseUrl}") baseUrl: String
+    ): WebClient = createWebClient(baseUrl)
+
+    @Bean("orderServiceWebClient")
+    fun orderServiceWebClient(
+        @Value("\${orderService.baseUrl}") baseUrl: String
     ): WebClient = createWebClient(baseUrl)
 
     fun createWebClient(baseUrl: String): WebClient {
@@ -206,6 +248,45 @@ class HttpProductRepository(
             HttpStatus.OK -> Result.success(Unit)
             HttpStatus.CONFLICT -> Result.failure(DuplicateProductIdException(product.id))
             else -> Result.failure(RuntimeException("Could not add product $product, httpStatus = $statusCode"))
+        }
+    }
+}
+
+interface OrderRepository {
+    suspend fun all(): Flow<Order>
+    suspend fun get(id: Int): Order?
+    suspend fun add(order: Order): Result<Unit>
+}
+
+class HttpOrderRepository(
+    @Qualifier("orderServiceWebClient")
+    private val webClient: WebClient
+) : OrderRepository {
+    override suspend fun all(): Flow<Order> {
+        return webClient.get()
+            .uri("/")
+            .retrieve()
+            .bodyToFlow()
+    }
+
+    override suspend fun get(id: Int): Order? {
+        return webClient.get()
+            .uri("/$id")
+            .awaitExchange()
+            .awaitBodyOrNull()
+    }
+
+    override suspend fun add(order: Order): Result<Unit> {
+        val statusCode = webClient.post()
+            .uri("/")
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .bodyValue(order)
+            .awaitExchange()
+            .statusCode()
+        return when (statusCode) {
+            HttpStatus.OK -> Result.success(Unit)
+            HttpStatus.CONFLICT -> Result.failure(DuplicateOrderIdException(order.id))
+            else -> Result.failure(RuntimeException("Could not add order $order, httpStatus = $statusCode"))
         }
     }
 }

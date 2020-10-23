@@ -1,5 +1,6 @@
 package nu.westlin.webshop.core
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -28,7 +29,7 @@ internal class HttpProductRepositoryTest {
 
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-    private val objectMapper = jacksonObjectMapper()
+    private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @Suppress("unused")
     @BeforeAll

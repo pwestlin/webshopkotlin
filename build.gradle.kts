@@ -59,7 +59,7 @@ subprojects {
         }
     }
 
-    if (project.name in listOf("core", "customer", "product")) {
+    if (project.name in listOf("core", "customer", "product", "order")) {
 
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
@@ -67,6 +67,7 @@ subprojects {
 
         dependencies {
             val implementation by configurations
+            implementation(project(":testdata"))
             implementation(kotlin("stdlib-jdk8"))
 
             implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -85,6 +86,7 @@ subprojects {
             testImplementation(project(":testutils"))
             testImplementation(group = "io.mockk", name = "mockk", version = "1.10.2")
             testImplementation(group = "com.ninja-squad", name = "springmockk", version = "2.0.3")
+            // TODO petves: WireMock is only needed i core...so far
             testImplementation("com.github.tomakehurst:wiremock-jre8:2.27.2")
         }
     }
