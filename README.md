@@ -31,6 +31,7 @@ networks:
 ```./gradlew dockerBuildImage```
 
 ## Run application
+Docker compose is the simplest way of tog get the entire application and all its microservices running: 
 ```docker-compose up```
 
 The Core microservice is the only one that is exposed outside the Docker network and therefore acts as the application facade. 
