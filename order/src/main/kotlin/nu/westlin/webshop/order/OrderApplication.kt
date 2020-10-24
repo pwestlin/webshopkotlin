@@ -2,6 +2,7 @@ package nu.westlin.webshop.order
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import nu.westlin.webshop.domain.CustomerId
 import nu.westlin.webshop.domain.DuplicateOrderIdException
 import nu.westlin.webshop.domain.Order
 import nu.westlin.webshop.test.orders
@@ -30,8 +31,6 @@ class OrderRoutesConfiguration {
 
     @Bean
     fun routes(repository: OrderRepository) = coRouter {
-        // TODO petves: Get orders by customerId
-        // TODO petves: Get orders by productId
         "/".nest {
             GET("") {
                 ServerResponse.ok().bodyAndAwait(repository.all())
@@ -50,6 +49,9 @@ class OrderRoutesConfiguration {
                         ServerResponse.status(HttpStatus.CONFLICT).buildAndAwait()
                     }
                 )
+            }
+            GET("/customer/{id}") {
+                ServerResponse.ok().bodyAndAwait(repository.getByCustomerId(it.pathVariable("id").toInt()))
             }
         }
     }
@@ -81,4 +83,6 @@ class OrderRepository(orders: List<Order>) {
             Result.failure(DuplicateOrderIdException(order.id))
         }
     }
+
+    fun getByCustomerId(customerId: CustomerId): Flow<Order> = this.orders.filter { it.customerId == customerId }.sortedByDescending { it.timestamp }.asFlow()
 }

@@ -2,6 +2,7 @@ package nu.westlin.webshop.core
 
 import kotlinx.coroutines.flow.Flow
 import nu.westlin.webshop.domain.Customer
+import nu.westlin.webshop.domain.CustomerId
 import nu.westlin.webshop.domain.DuplicateCustomerIdException
 import nu.westlin.webshop.domain.DuplicateOrderIdException
 import nu.westlin.webshop.domain.DuplicateProductIdException
@@ -132,6 +133,9 @@ class OrderRoutesConfiguration {
                     }
                 )
             }
+            GET("/customer/{id}") {
+                ServerResponse.ok().bodyAndAwait(repository.getByCustomerId(it.pathVariable("id").toInt()))
+            }
         }
     }
 }
@@ -256,6 +260,7 @@ interface OrderRepository {
     suspend fun all(): Flow<Order>
     suspend fun get(id: Int): Order?
     suspend fun add(order: Order): Result<Unit>
+    suspend fun getByCustomerId(customerId: CustomerId): Flow<Order>
 }
 
 class HttpOrderRepository(
@@ -288,5 +293,12 @@ class HttpOrderRepository(
             HttpStatus.CONFLICT -> Result.failure(DuplicateOrderIdException(order.id))
             else -> Result.failure(RuntimeException("Could not add order $order, httpStatus = $statusCode"))
         }
+    }
+
+    override suspend fun getByCustomerId(customerId: CustomerId): Flow<Order> {
+        return webClient.get()
+            .uri("/customer/$customerId")
+            .retrieve()
+            .bodyToFlow()
     }
 }

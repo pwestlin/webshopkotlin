@@ -8,7 +8,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.matching.EqualToPattern
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import nu.westlin.webshop.test.maria
 import nu.westlin.webshop.test.order1
+import nu.westlin.webshop.test.order2
 import nu.westlin.webshop.test.order4
 import nu.westlin.webshop.test.orders
 import org.assertj.core.api.Assertions.assertThat
@@ -108,5 +110,17 @@ internal class HttpOrderRepositoryTest {
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withRequestBody(EqualToPattern(objectMapper.writeValueAsString(order)))
         )
+    }
+
+    @Test
+    fun `get orders by customer id`() = runBlocking<Unit> {
+        val customer = maria
+        mockServer.stubFor(
+            WireMock.get(WireMock.urlPathEqualTo("/customer/${customer.id}"))
+                .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .willReturn(WireMock.okJson(objectMapper.writeValueAsString(listOf(order2, order1))))
+        )
+
+        assertThat(repository.getByCustomerId(customer.id).toList()).containsExactly(order2, order1)
     }
 }

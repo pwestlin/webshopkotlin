@@ -4,10 +4,14 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.runBlocking
 import nu.westlin.webshop.domain.DuplicateOrderIdException
 import nu.westlin.webshop.domain.Order
 import nu.westlin.webshop.test.inlineValue
+import nu.westlin.webshop.test.maria
 import nu.westlin.webshop.test.order1
+import nu.westlin.webshop.test.order2
 import nu.westlin.webshop.test.order3
 import nu.westlin.webshop.test.orders
 import org.assertj.core.api.Assertions.assertThat
@@ -95,5 +99,34 @@ internal class OrderRoutesConfigurationTest(@Autowired private val client: WebTe
         assertThat(result.responseBody).isNull()
 
         verify { repository.add(order) }
+    }
+
+    @Test
+    fun `get orders by customerId`() {
+        val customer = maria
+        val customersOrders = listOf(order1, order2).sortedByDescending { it.timestamp }
+
+        every { repository.getByCustomerId(customer.id) } returns customersOrders.asFlow()
+
+        val result = client.get()
+            .uri("/customer/${customer.id}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList<Order>().returnResult()
+        assertThat(result.responseBody).containsExactlyElementsOf(customersOrders)
+    }
+
+    @Test
+    fun `get orders by customerId that does not have any orders`() = runBlocking<Unit> {
+        val customer = maria
+
+        every { repository.getByCustomerId(customer.id) } returns emptyFlow()
+
+        val result = client.get()
+            .uri("/customer/${customer.id}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList<Order>().returnResult()
+        assertThat(result.responseBody).isEmpty()
     }
 }

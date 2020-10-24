@@ -3,6 +3,7 @@ package nu.westlin.webshop.order
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import nu.westlin.webshop.domain.DuplicateOrderIdException
+import nu.westlin.webshop.test.maria
 import nu.westlin.webshop.test.order1
 import nu.westlin.webshop.test.order2
 import nu.westlin.webshop.test.order3
@@ -51,5 +52,16 @@ internal class OrderRepositoryTest {
     @Test
     fun `get a order by an id that does not exist`() {
         assertThat(repository.get(-1)).isNull()
+    }
+
+    @Test
+    fun `get orders by customerId`() = runBlocking<Unit> {
+        val customer = maria
+        assertThat(repository.getByCustomerId(customer.id).toList()).containsExactly(order2, order1)
+    }
+
+    @Test
+    fun `get orders by customerId that does not have any orders`() = runBlocking<Unit> {
+        assertThat(repository.getByCustomerId(-1).toList()).isEmpty()
     }
 }
