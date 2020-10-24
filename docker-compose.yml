@@ -1,0 +1,41 @@
+version: "3.2"
+
+networks:
+  webshop:
+    driver: bridge
+
+services:
+  core:
+    image: nu.westlin.webshopkotlin/core:0.1-SNAPSHOT
+    networks:
+      webshop:
+        aliases:
+          - core
+    ports:
+      - 8080:8080
+    depends_on:
+      - customer
+      - product
+      - order
+
+  customer:
+    image: nu.westlin.webshopkotlin/customer:0.1-SNAPSHOT
+    networks:
+      webshop:
+        aliases:
+          - customer
+
+  product:
+    image: nu.westlin.webshopkotlin/product:0.1-SNAPSHOT
+    networks:
+      webshop:
+        aliases:
+          - product
+
+  order:
+    image: nu.westlin.webshopkotlin/order:0.1-SNAPSHOT
+    networks:
+      webshop:
+        aliases:
+          - order
+

@@ -10,6 +10,8 @@ plugins {
 
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     idea
+
+    id("com.bmuschko.docker-spring-boot-application") version "6.6.1"
 }
 
 allprojects {
@@ -64,6 +66,15 @@ subprojects {
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
         apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+
+        apply(plugin = "com.bmuschko.docker-spring-boot-application")
+        docker {
+            springBootApplication {
+                baseImage.set("openjdk:8-alpine")
+                // ports.set(listOf(8080))
+                images.set(setOf("nu.westlin.${project.rootProject.name}/${project.name}:${version}"))
+            }
+        }
 
         dependencies {
             val implementation by configurations

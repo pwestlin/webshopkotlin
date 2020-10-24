@@ -1,6 +1,5 @@
 spring.application.name: core
 
-
-customerService.baseUrl: http://localhost:8081
-productService.baseUrl: http://localhost:8082
-orderService.baseUrl: http://localhost:8083
+customerService.baseUrl: http://customer:8080
+productService.baseUrl: http://product:8080
+orderService.baseUrl: http://order:8080
