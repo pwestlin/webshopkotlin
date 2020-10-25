@@ -1,0 +1,19 @@
+spring.application.name: service-discovery-server
+
+server:
+  port: 8761
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    #server:
+    #expected-client-renewal-interval-seconds: 5
+    #waitTimeInMsWhenSyncEmpty: 0
+    #evictionIntervalTimerInMs: 5000
+spring.cloud.loadbalancer.ribbon.enabled: false
+
+
+#logging.level.com.netflix:
+#  eureka: OFF
+#  discovery: OFF

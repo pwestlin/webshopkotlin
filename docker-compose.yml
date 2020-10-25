@@ -5,6 +5,15 @@ networks:
     driver: bridge
 
 services:
+  service-discovery-server:
+    image: nu.westlin.webshopkotlin/discovery-server:0.1-SNAPSHOT
+    networks:
+      webshop:
+        aliases:
+          - service-discovery-server
+    ports:
+      - 8761:8761
+
   core:
     image: nu.westlin.webshopkotlin/core:0.1-SNAPSHOT
     networks:
@@ -14,6 +23,7 @@ services:
     ports:
       - 8080:8080
     depends_on:
+      - service-discovery-server
       - customer
       - product
       - order
@@ -24,6 +34,8 @@ services:
       webshop:
         aliases:
           - customer
+    depends_on:
+      - service-discovery-server
 
   product:
     image: nu.westlin.webshopkotlin/product:0.1-SNAPSHOT
@@ -31,6 +43,8 @@ services:
       webshop:
         aliases:
           - product
+    depends_on:
+      - service-discovery-server
 
   order:
     image: nu.westlin.webshopkotlin/order:0.1-SNAPSHOT
@@ -38,4 +52,6 @@ services:
       webshop:
         aliases:
           - order
+    depends_on:
+      - service-discovery-server
 

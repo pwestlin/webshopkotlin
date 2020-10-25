@@ -37,7 +37,9 @@ internal class HttpProductRepositoryTest {
         mockServer = WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort()).apply { start() }
 
         repository = HttpProductRepository(
-            WebClientConfiguration().productServiceWebClient("http://localhost:${mockServer.port()}")
+            WebClientConfiguration().webClientBuilder()
+                .baseUrl("http://localhost:${mockServer.port()}")
+                .build()
         )
     }
 

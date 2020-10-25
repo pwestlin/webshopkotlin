@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient
+import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.beans
@@ -33,6 +35,7 @@ import org.springframework.web.reactive.function.server.coRouter
 import org.springframework.web.reactive.function.server.json
 
 @SpringBootApplication
+@EnableDiscoveryClient
 class CoreApplication
 
 @Configuration
@@ -155,25 +158,36 @@ fun main(args: Array<String>) {
 @Configuration
 class WebClientConfiguration {
 
+    // petves: You have to have a WebClient.Builder annotated with @LoadBalanced to use Service Discovery
+    // and then use that to create a WebClient-bean.
+    @Bean
+    @LoadBalanced
+    fun webClientBuilder(): WebClient.Builder {
+        return WebClient.builder()
+            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+    }
+
     @Bean("customerServiceWebClient")
-    fun customerServiceWebClient(
-        @Value("\${customerService.baseUrl}") baseUrl: String
-    ): WebClient = createWebClient(baseUrl)
+    fun customerServiceWebClientBuilder(
+        @Value("\${customerService.baseUrl}") baseUrl: String,
+        webClientBuilder: WebClient.Builder
+    ): WebClient = createWebClient(baseUrl, webClientBuilder)
 
     @Bean("productServiceWebClient")
     fun productServiceWebClient(
-        @Value("\${productService.baseUrl}") baseUrl: String
-    ): WebClient = createWebClient(baseUrl)
+        @Value("\${productService.baseUrl}") baseUrl: String,
+        webClientBuilder: WebClient.Builder
+    ): WebClient = createWebClient(baseUrl, webClientBuilder)
 
     @Bean("orderServiceWebClient")
     fun orderServiceWebClient(
-        @Value("\${orderService.baseUrl}") baseUrl: String
-    ): WebClient = createWebClient(baseUrl)
+        @Value("\${orderService.baseUrl}") baseUrl: String,
+        webClientBuilder: WebClient.Builder
+    ): WebClient = createWebClient(baseUrl, webClientBuilder)
 
-    fun createWebClient(baseUrl: String): WebClient {
-        return WebClient.builder()
+    fun createWebClient(baseUrl: String, webClientBuilder: WebClient.Builder): WebClient {
+        return webClientBuilder()
             .baseUrl(baseUrl)
-            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .build()
     }
 }
