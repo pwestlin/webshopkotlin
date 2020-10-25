@@ -1,5 +1,15 @@
 spring.application.name: core
 
-customerService.baseUrl: http://customer:8080
-productService.baseUrl: http://product:8080
-orderService.baseUrl: http://order:8080
+#spring.cloud.loadbalancer.ribbon.enabled: false
+
+# todo petves: customer -> customer-service
+customerService.baseUrl: http://customer
+productService.baseUrl: http://product
+orderService.baseUrl: http://order
+
+
+eureka:
+  client:
+    register-with-eureka: false
+    serviceUrl:
+      defaultZone: http://service-discovery-server:8761/eureka/

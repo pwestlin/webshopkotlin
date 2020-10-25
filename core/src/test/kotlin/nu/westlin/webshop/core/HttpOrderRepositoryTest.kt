@@ -39,7 +39,9 @@ internal class HttpOrderRepositoryTest {
         mockServer = WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort()).apply { start() }
 
         repository = HttpOrderRepository(
-            WebClientConfiguration().orderServiceWebClient("http://localhost:${mockServer.port()}")
+            WebClientConfiguration().webClientBuilder()
+                .baseUrl("http://localhost:${mockServer.port()}")
+                .build()
         )
     }
 

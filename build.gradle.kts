@@ -61,8 +61,7 @@ subprojects {
         }
     }
 
-    if (project.name in listOf("core", "customer", "product", "order")) {
-
+    if (project.name == "discovery-server") {
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
         apply(plugin = "org.jetbrains.kotlin.plugin.spring")
@@ -71,14 +70,45 @@ subprojects {
         docker {
             springBootApplication {
                 baseImage.set("openjdk:8-alpine")
-                // ports.set(listOf(8080))
-                images.set(setOf("nu.westlin.${project.rootProject.name}/${project.name}:${version}"))
+                images.set(setOf("nu.westlin.${project.rootProject.name}/${project.name}:$version"))
+            }
+        }
+
+        dependencies {
+            val implementation by configurations
+
+            implementation(enforcedPlatform("org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR8"))
+
+            implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
+            implementation("org.jetbrains.kotlin:kotlin-reflect")
+            implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+            implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
+
+            val testImplementation by configurations
+            testImplementation("org.springframework.boot:spring-boot-starter-test") {
+                exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+            }
+        }
+    }
+
+    if (project.name in listOf("core", "customer", "product", "order")) {
+        apply(plugin = "org.springframework.boot")
+        apply(plugin = "io.spring.dependency-management")
+        apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+
+        apply(plugin = "com.bmuschko.docker-spring-boot-application")
+        docker {
+            springBootApplication {
+                baseImage.set("openjdk:8-alpine")
+                images.set(setOf("nu.westlin.${project.rootProject.name}/${project.name}:$version"))
             }
         }
 
         dependencies {
             val implementation by configurations
             implementation(project(":testdata"))
+            implementation(project(":domain"))
             implementation(kotlin("stdlib-jdk8"))
 
             implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -87,8 +117,11 @@ subprojects {
             implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
             implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
+            "discovery-server"
+
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+            implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
             val testImplementation by configurations
             testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -97,6 +130,8 @@ subprojects {
             testImplementation(project(":testutils"))
             testImplementation(group = "io.mockk", name = "mockk", version = "1.10.2")
             testImplementation(group = "com.ninja-squad", name = "springmockk", version = "2.0.3")
+
+            implementation(enforcedPlatform("org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR8"))
         }
     }
 
