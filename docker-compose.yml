@@ -22,6 +22,8 @@ services:
           - core-service
     ports:
       - 8080:8080
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
     depends_on:
       - service-discovery-server
       - customer-service
@@ -34,6 +36,8 @@ services:
       webshop:
         aliases:
           - customer-service
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
     depends_on:
       - service-discovery-server
 
@@ -43,6 +47,8 @@ services:
       webshop:
         aliases:
           - product-service
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
     depends_on:
       - service-discovery-server
 
@@ -52,6 +58,8 @@ services:
       webshop:
         aliases:
           - order-service
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
     depends_on:
       - service-discovery-server
 

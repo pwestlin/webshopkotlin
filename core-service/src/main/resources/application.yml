@@ -7,8 +7,6 @@ orderService.baseUrl: http://order-service
 eureka:
   client:
     register-with-eureka: false
-    serviceUrl:
-      defaultZone: http://service-discovery-server:8761/eureka/
   instance:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
