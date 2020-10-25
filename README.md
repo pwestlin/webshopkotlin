@@ -3,7 +3,7 @@ An extremely simple, reactive webshop implemented in Kotlin, microservices and S
 
 ## Application components
 The application is composed by the following components:
-* Service Discovery Server
+* Service Discovery Server (Eureka).
 * Customer
 * Product
 * Order
