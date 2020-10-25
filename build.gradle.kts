@@ -92,7 +92,7 @@ subprojects {
         }
     }
 
-    if (project.name in listOf("core", "customer", "product", "order")) {
+    if (project.name in listOf("core-service", "customer-service", "product-service", "order-service")) {
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
         apply(plugin = "org.jetbrains.kotlin.plugin.spring")
@@ -117,8 +117,6 @@ subprojects {
             implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
             implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
-            "discovery-server"
-
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
             implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
@@ -135,7 +133,7 @@ subprojects {
         }
     }
 
-    if (project.name in listOf("core")) {
+    if (project.name in listOf("core-service")) {
         dependencies {
             val testImplementation by configurations
             testImplementation("com.github.tomakehurst:wiremock-jre8:2.27.2")

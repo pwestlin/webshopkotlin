@@ -14,44 +14,44 @@ services:
     ports:
       - 8761:8761
 
-  core:
-    image: nu.westlin.webshopkotlin/core:0.1-SNAPSHOT
+  core-service:
+    image: nu.westlin.webshopkotlin/core-service:0.1-SNAPSHOT
     networks:
       webshop:
         aliases:
-          - core
+          - core-service
     ports:
       - 8080:8080
     depends_on:
       - service-discovery-server
-      - customer
-      - product
-      - order
+      - customer-service
+      - product-service
+      - order-service
 
-  customer:
-    image: nu.westlin.webshopkotlin/customer:0.1-SNAPSHOT
+  customer-service:
+    image: nu.westlin.webshopkotlin/customer-service:0.1-SNAPSHOT
     networks:
       webshop:
         aliases:
-          - customer
+          - customer-service
     depends_on:
       - service-discovery-server
 
-  product:
-    image: nu.westlin.webshopkotlin/product:0.1-SNAPSHOT
+  product-service:
+    image: nu.westlin.webshopkotlin/product-service:0.1-SNAPSHOT
     networks:
       webshop:
         aliases:
-          - product
+          - product-service
     depends_on:
       - service-discovery-server
 
-  order:
-    image: nu.westlin.webshopkotlin/order:0.1-SNAPSHOT
+  order-service:
+    image: nu.westlin.webshopkotlin/order-service:0.1-SNAPSHOT
     networks:
       webshop:
         aliases:
-          - order
+          - order-service
     depends_on:
       - service-discovery-server
 
