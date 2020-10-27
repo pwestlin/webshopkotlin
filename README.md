@@ -29,7 +29,7 @@ or
 ```docker-compose up && docker-compose rm -fsv```
 if you like the Docker containers to be removed after you shutdown the application (with ctrl+c).
 
-The Core microservice (port 8080) and Eureka Server (port 8761) are the only services exposed outside the Docker network.
+The Core Service (port 8080) and Eureka Server (port 8761) are the only services exposed outside the Docker network.
 
 ### IDE
 Run all the five applications separately.
@@ -53,8 +53,25 @@ POST a new order:
 
 ### GUI?
 
+* List
+    * customers
+    * products
+    * orders
+* Add
+    * customer
+    * product
+    * order
+
+#### ReactJS?
+
+#### Kotlin/JS?
+[Building Web Applications with React and Kotlin/JS](https://play.kotlinlang.org/hands-on/Building%20Web%20Applications%20with%20React%20and%20Kotlin%20JS/01_Introduction)
+
 ### DDD?
+[DDD with Kotlin](https://tuhrig.de/ddd-with-kotlin/)
 
 ### Event sourcing?
-* https://microservices.io/patterns/data/event-sourcing.html
-* https://tuhrig.de/event-sourcing-with-kotlin/
+* [Event sourcing](https://microservices.io/patterns/data/event-sourcing.html)
+* [Event sourcing with Kotlin](https://tuhrig.de/event-sourcing-with-kotlin/)
+    * [GitHub repo for the above](https://github.com/bringmeister/event-sourcing-with-kotlin)
+* [Kotlin event sourcing example](https://github.com/nicusX/kotlin-event-sourcing-example)
