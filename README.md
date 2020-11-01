@@ -66,7 +66,8 @@ POST a new order:
 
 #### Kotlin/JS?
 [Building Web Applications with React and Kotlin/JS](https://play.kotlinlang.org/hands-on/Building%20Web%20Applications%20with%20React%20and%20Kotlin%20JS/01_Introduction)  
-[Building a Full Stack Web App with Kotlin Multiplatform](https://play.kotlinlang.org/hands-on/Full%20Stack%20Web%20App%20with%20Kotlin%20Multiplatform/01_Introduction)
+[Building a Full Stack Web App with Kotlin Multiplatform](https://play.kotlinlang.org/hands-on/Full%20Stack%20Web%20App%20with%20Kotlin%20Multiplatform/01_Introduction)  
+[Kotlin wrappers](https://github.com/JetBrains/kotlin-wrappers/)
 
 ### DDD?
 [DDD with Kotlin](https://tuhrig.de/ddd-with-kotlin/)
